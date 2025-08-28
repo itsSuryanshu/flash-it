@@ -1,8 +1,8 @@
 import { GalleryVerticalEnd } from "lucide-react";
 import Image from "next/image";
-import { LoginForm } from "@/components/login-form";
+import { SignupForm } from "@/components/signup-form";
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <div className="relative min-h-svh overflow-hidden">
       {/* Full page background image */}
@@ -28,7 +28,7 @@ export default function LoginPage() {
             </div>
             <div className="flex flex-1 items-center justify-center">
               <div className="w-full max-w-xs">
-                <LoginForm />
+                <SignupForm />
               </div>
             </div>
           </div>

@@ -17,7 +17,6 @@ export const user = pgTable("user", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
-  hashedPassword: text("hashed_password"),
   createdAt: timestamp("created_at", { withTimezone: true })
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
@@ -29,7 +28,7 @@ export const user = pgTable("user", {
 export const session = pgTable(
   "session",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
+    id: text("id").primaryKey(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     token: text("token").notNull().unique(),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -53,7 +52,7 @@ export const session = pgTable(
 export const account = pgTable(
   "account",
   {
-    id: uuid("id").primaryKey().defaultRandom(),
+    id: text("id").primaryKey(),
     accountId: text("account_id").notNull(),
     providerId: text("provider_id").notNull(),
     userId: text("user_id")
@@ -83,7 +82,7 @@ export const account = pgTable(
 );
 
 export const verification = pgTable("verification", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),

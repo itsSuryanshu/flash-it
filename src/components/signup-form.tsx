@@ -4,7 +4,7 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { signIn } from "@/server/users";
+import { signUp } from "@/server/users";
 import { authClient } from "@/lib/auth-client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,16 +25,17 @@ import { useRouter } from "next/navigation";
 const signInWithGoogle = async () => {
   await authClient.signIn.social({
     provider: "google",
-    callbackURL: "/dashboard",
+    callbackURL: "/signin",
   });
 };
 
 const formSchema = z.object({
+  name: z.string().min(2),
   email: z.string().email(),
   password: z.string(),
 });
 
-export function LoginForm({
+export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
@@ -42,16 +43,21 @@ export function LoginForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { success, message } = await signIn(values.email, values.password);
+    const { success, message } = await signUp(
+      values.name,
+      values.email,
+      values.password,
+    );
     if (success) {
       toast.success(message as string);
-      router.push("/dashboard");
+      router.push("/signin");
     } else {
       toast.error(message as string);
     }
@@ -65,12 +71,31 @@ export function LoginForm({
         {...props}
       >
         <div className="flex flex-col items-center gap-2 text-center">
-          <h1 className="text-2xl font-bold">Login to your account</h1>
+          <h1 className="text-2xl font-bold">Create your account</h1>
           <p className="text-muted-foreground text-sm text-balance">
-            Enter your email below to login to your account
+            Enter your information below to create to your account
           </p>
         </div>
         <div className="grid gap-6">
+          <div className="grid gap-3">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Name..."
+                      {...field}
+                      className="border-gray-700"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
           <div className="grid gap-3">
             <FormField
               control={form.control}
@@ -111,16 +136,10 @@ export function LoginForm({
                   </FormItem>
                 )}
               />
-              <a
-                href="#"
-                className="ml-auto text-sm underline-offset-4 hover:underline"
-              >
-                Forgot your password?
-              </a>
             </div>
           </div>
           <Button type="submit" className="w-full bg-purple-600">
-            Login
+            Sign Up
           </Button>
           <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
             <span className="bg-transparent text-muted-foreground relative z-10 px-2">
@@ -144,9 +163,9 @@ export function LoginForm({
           </Button>
         </div>
         <div className="text-center text-sm">
-          Don&apos;t have an account?{" "}
-          <a href="/signup" className="underline underline-offset-4">
-            Sign up
+          Already have an account?{" "}
+          <a href="/signin" className="underline underline-offset-4">
+            Sign in
           </a>
         </div>
       </form>
